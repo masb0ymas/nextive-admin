@@ -1,0 +1,71 @@
+@font-face {
+  font-family: 'OpenSans-Regular';
+  src: local('OpenSans'), local('OpenSans-Regular'),
+    url('/fonts/OpenSans/OpenSans-Regular.ttf') format('truetype'),
+    url('/fonts/OpenSans/OpenSans-Regular.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'OpenSans-Bold';
+  src: url('/fonts/OpenSans/OpenSans-Bold.ttf') format('truetype'),
+    url('/fonts/OpenSans/OpenSans-Bold.otf') format('opentype');
+}
+
+$max-width: 1440px;
+
+:root {
+  --backgroundColor: #f7f7f7;
+  --backgroundGray: #f8f8fa;
+  --primaryColor: #209eee;
+  --textColorSecondary: rgba(0, 0, 0, 0.45);
+  --primaryFont: 'OpenSans-Regular';
+}
+
+#__next {
+  height: 100%;
+  font-family: 'OpenSans-Regular';
+
+  .ant-card-bordered {
+    border: 2px solid #f0f0f0;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.rounded-8 {
+  border-radius: 8px !important;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+
+  .ant-spin-container {
+    height: 100%;
+  }
+}
+
+.reset-a,
+.reset-a:hover,
+.reset-a:visited,
+.reset-a:focus,
+.reset-a:active {
+  text-decoration: none;
+  color: inherit;
+  outline: 0;
+}
+
+.download-table-xls-button {
+  background-color: #209eee;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  color: #f0f0f0;
+  cursor: pointer;
+  box-shadow: 3px 5px 10px -4px rgba(0, 0, 0, 0.75);
+}
