@@ -1,4 +1,6 @@
+/* eslint-disable react/prop-types */
 import DeleteOutlined from '@ant-design/icons/DeleteOutlined'
+import DownloadOutlined from '@ant-design/icons/DownloadOutlined'
 import EditTwoTone from '@ant-design/icons/EditTwoTone'
 import PlusOutlined from '@ant-design/icons/PlusOutlined'
 import ConstRole from '@nexys/constants/ConstRole'
@@ -13,6 +15,7 @@ import { QueryObserverBaseResult, useMutation } from 'react-query'
 import { Column } from 'react-table-6'
 import MyPagination from '../MyPagination/MyPagination'
 import Table from '../Table/Table'
+import TableFixedColumns from '../Table/TableFixedColumns'
 
 type Query = QueryObserverBaseResult & {
   data: any[]
@@ -20,15 +23,34 @@ type Query = QueryObserverBaseResult & {
   total: number
 }
 
-interface MyTableProps {
+export interface MyTableProps {
   baseUrl: string
   query: Query
   columns: Column<any>[]
-  mutation: ReturnType<typeof useMutation>
+  mutation?: ReturnType<typeof useMutation>
+  customAddURL?: string | null
+  customImportExcelURL?: string | null
+  isAdd?: boolean
+  isEdit?: boolean
+  isDeleted?: boolean
+  isImportExcel?: boolean
+  isFixedColumns?: boolean
 }
 
 function MyTable(props: MyTableProps) {
-  const { baseUrl, columns, query, mutation } = props
+  const {
+    baseUrl,
+    columns,
+    query,
+    mutation,
+    customAddURL,
+    customImportExcelURL,
+    isAdd = true,
+    isEdit = true,
+    isDeleted = true,
+    isImportExcel = false,
+    isFixedColumns = false,
+  } = props
 
   const { data, refetch, isLoading: queryLoading, helpers } = query
 
@@ -104,7 +126,8 @@ function MyTable(props: MyTableProps) {
     }
   }
 
-  const defaultColumns = [
+  // check box columns
+  const checkboxColumns = [
     {
       Header: () => (
         <Checkbox
@@ -124,6 +147,10 @@ function MyTable(props: MyTableProps) {
         )
       },
     },
+  ]
+
+  // index columns
+  const indexColumns = [
     {
       Header: 'No.',
       accessor: 'no',
@@ -136,6 +163,7 @@ function MyTable(props: MyTableProps) {
     },
   ]
 
+  // action columns
   const actionColumns = [
     {
       Header: 'Edit',
@@ -145,10 +173,10 @@ function MyTable(props: MyTableProps) {
         const { original } = row
         const page = helpers.getQueryById('page') || 1
 
-        const directTo = `${baseUrl}/edit/${original?.id}?redirectUrl=${baseUrl}?page=${page}`
+        const targetURL = `${baseUrl}/edit/${original?.id}?redirectUrl=${baseUrl}?page=${page}`
 
         return (
-          <Link href={directTo}>
+          <Link href={targetURL}>
             <a>
               <Button type="link" icon={<EditTwoTone />} />
             </a>
@@ -158,13 +186,67 @@ function MyTable(props: MyTableProps) {
     },
   ]
 
-  const newColumns = [...defaultColumns, ...columns, ...actionColumns]
+  // action columns
+  const actionFixedColumns = [
+    {
+      Header: 'Edit',
+      accessor: 'edit',
+      fixed: 'right',
+      width: 70,
+      Cell: (row) => {
+        const { original } = row
+        const page = helpers.getQueryById('page') || 1
+
+        const targetURL = `${baseUrl}/edit/${original?.id}?redirectUrl=${baseUrl}?page=${page}`
+
+        return (
+          <Link href={targetURL}>
+            <a>
+              <Button type="link" icon={<EditTwoTone />} />
+            </a>
+          </Link>
+        )
+      },
+    },
+  ]
+
+  // super admin privilage
+  const onlySuperAdmin = [ConstRole.ID_SUPER_ADMIN].includes(
+    dataProfile?.RoleId,
+  )
+
+  // admin privilage
+  const onlyAdmin = [ConstRole.ID_SUPER_ADMIN, ConstRole.ID_ADMIN].includes(
+    dataProfile?.RoleId,
+  )
+
+  const checkAddAction = isAdd
+  const checkDeletedAction = isDeleted && onlySuperAdmin
+  const checkImportExcelAction = isImportExcel && onlyAdmin
+
+  // default columns
+  const defaultColumns = [...indexColumns, ...columns]
+
+  // check action columns fixed or not
+  const newActionsColumns = isFixedColumns ? actionFixedColumns : actionColumns
+
+  // check is edit columns
+  const editedColumns = isEdit
+    ? [...defaultColumns, ...newActionsColumns]
+    : [...defaultColumns]
+
+  // check is deleted columns
+  const deletedColumns = isDeleted
+    ? [...checkboxColumns, ...editedColumns]
+    : [...editedColumns]
+
+  // new columns
+  const newColumns = deletedColumns
 
   return (
     <React.Fragment>
-      {/* Only Super Admin */}
-      {dataProfile.RoleId === ConstRole.ID_SUPER_ADMIN && (
-        <Col flex="auto">
+      {checkDeletedAction && (
+        <Col flex={'auto'}>
           <Popconfirm
             visible={isVisible}
             title="Are you sure you want to delete this data ?"
@@ -185,26 +267,52 @@ function MyTable(props: MyTableProps) {
         </Col>
       )}
 
-      <Col flex="auto" />
+      {checkImportExcelAction && (
+        <Col>
+          <Link href={customImportExcelURL ?? `${baseUrl}/import-excel`}>
+            <a>
+              <Button
+                type="default"
+                style={{ color: '#1a9445', borderColor: '#1a9445' }}
+                icon={<DownloadOutlined />}
+              >
+                Import Excel
+              </Button>
+            </a>
+          </Link>
+        </Col>
+      )}
 
-      <Col>
-        <Link href={`${baseUrl}/add`}>
-          <a>
-            <Button type="primary" icon={<PlusOutlined />}>
-              Add
-            </Button>
-          </a>
-        </Link>
-      </Col>
+      {checkAddAction && (
+        <Col>
+          <Link href={customAddURL ?? `${baseUrl}/add`}>
+            <a>
+              <Button type="primary" icon={<PlusOutlined />}>
+                Add
+              </Button>
+            </a>
+          </Link>
+        </Col>
+      )}
 
       <Col xs={24}>
-        <Table
-          columns={newColumns}
-          data={data}
-          defaultPageSize={defaultPageSize}
-          className="-highlight"
-          loading={queryLoading}
-        />
+        {isFixedColumns ? (
+          <TableFixedColumns
+            columns={newColumns}
+            data={data}
+            defaultPageSize={defaultPageSize}
+            className="-highlight"
+            loading={queryLoading}
+          />
+        ) : (
+          <Table
+            columns={newColumns}
+            data={data}
+            defaultPageSize={defaultPageSize}
+            className="-highlight"
+            loading={queryLoading}
+          />
+        )}
       </Col>
 
       <Col xs={24} style={{ textAlign: 'right' }}>
