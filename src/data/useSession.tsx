@@ -1,12 +1,12 @@
 import { BASE_API_URL } from '@nexys/constants/ConstBaseURL'
 import useUrlQuery, {
-  UseUrlQueryOptions
+  UseUrlQueryOptions,
 } from '@nexys/hooks/useUrlQuery/useUrlQuery'
 import { AxiosError } from 'axios'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ApiCall from 'services/ApiCall'
 
-export interface UseSessionData {
+export interface SessionEntity {
   id: string
   UserId: string
   token: string
@@ -21,12 +21,15 @@ export interface UseSessionData {
 }
 
 type UseSessionResult = {
-  data: UseSessionData[]
+  data: SessionEntity[]
   total: number
 }
 
 type TQueryFnData = UseSessionResult
 type TError = AxiosError
+
+// endpoint API
+const endpointURL = `${BASE_API_URL}/session?`
 
 function useSession(
   urlOptions?: UseUrlQueryOptions,
@@ -36,11 +39,9 @@ function useSession(
   const query = useQuery<TQueryFnData, TError>(
     urlQuery.transformKey('/session'),
     () =>
-      ApiCall.api
-        .get(urlQuery.transformUrl(`${BASE_API_URL}/session?`))
-        .then((res) => {
-          return res.data
-        }),
+      ApiCall.api.get(urlQuery.transformUrl(endpointURL)).then((res) => {
+        return res.data
+      }),
     {
       ...options,
     },

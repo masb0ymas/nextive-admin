@@ -3,14 +3,17 @@ import useUrlQuery, {
   UseUrlQueryOptions,
 } from '@nexys/hooks/useUrlQuery/useUrlQuery'
 import { AxiosError } from 'axios'
-import { UseUserData } from 'data/useUser'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ApiCall from 'services/ApiCall'
+import { UserEntity } from './useUser'
 
-type UseUserResult = UseUserData
+type UseUserResult = UserEntity
 
 type TQueryFnData = UseUserResult
 type TError = AxiosError
+
+// endpoint API
+const endpointURL = `${BASE_API_URL}/user`
 
 function useUserById(
   id: any,
@@ -20,7 +23,7 @@ function useUserById(
   const urlQuery = useUrlQuery(urlOptions)
   const query = useQuery<TQueryFnData, TError>(
     urlQuery.transformKey(['/user-by-id', id]),
-    () => ApiCall.api.get(urlQuery.transformUrl(`${BASE_API_URL}/user/${id}`)),
+    () => ApiCall.api.get(urlQuery.transformUrl(`${endpointURL}/${id}`)),
     {
       // refetchOnMount: false,
       // refetchOnReconnect: false,

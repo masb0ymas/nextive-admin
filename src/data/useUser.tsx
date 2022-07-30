@@ -3,11 +3,25 @@ import useUrlQuery, {
   UseUrlQueryOptions,
 } from '@nexys/hooks/useUrlQuery/useUrlQuery'
 import { AxiosError } from 'axios'
-import { UseRoleData } from 'data/useRole'
+import { RoleEntity } from 'data/useRole'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ApiCall from 'services/ApiCall'
 
-export interface UseUserData {
+export const defaultUserData = {
+  id: null,
+  fullName: null,
+  email: null,
+  phone: null,
+  picturePath: null,
+  isActive: null,
+  RoleId: null,
+  Role: null,
+  createdAt: null,
+  updatedAt: null,
+  deletedAt: null,
+}
+
+export interface UserEntity {
   id: string
   fullName: string
   email?: string | null
@@ -15,19 +29,27 @@ export interface UseUserData {
   picturePath: string
   isActive?: boolean | null
   RoleId: string
-  Role: UseRoleData
+  Role: RoleEntity
   createdAt: string
   updatedAt: string
   deletedAt: string
 }
 
+export type UserAttributes = Omit<
+  UserEntity,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>
+
 type UseUserResult = {
-  data: UseUserData[]
+  data: UserEntity[]
   total: number
 }
 
 type TQueryFnData = UseUserResult
 type TError = AxiosError
+
+// endpoint API
+const endpointURL = `${BASE_API_URL}/user?`
 
 function useUser(
   urlOptions?: UseUrlQueryOptions,
@@ -37,11 +59,9 @@ function useUser(
   const query = useQuery<TQueryFnData, TError>(
     urlQuery.transformKey('/user'),
     () =>
-      ApiCall.api
-        .get(urlQuery.transformUrl(`${BASE_API_URL}/user?`))
-        .then((res) => {
-          return res.data
-        }),
+      ApiCall.api.get(urlQuery.transformUrl(endpointURL)).then((res) => {
+        return res.data
+      }),
     {
       ...options,
     },

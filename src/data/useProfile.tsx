@@ -22,6 +22,9 @@ type UseProfileResult = UseProfileData
 type TQueryFnData = UseProfileResult
 type TError = AxiosError
 
+// endpoint API
+const endpointURL = `${BASE_API_URL}/auth/verify-session`
+
 function useProfile(
   urlOptions?: UseUrlQueryOptions,
   options?: UseQueryOptions<TQueryFnData, TError>,
@@ -30,10 +33,9 @@ function useProfile(
   const query = useQuery<TQueryFnData, TError>(
     urlQuery.transformKey('/verify-session'),
     () =>
-      ApiCall.api.get(
-        urlQuery.transformUrl(`${BASE_API_URL}/auth/verify-session`),
-        { isShowNotificationError: false },
-      ),
+      ApiCall.api.get(urlQuery.transformUrl(endpointURL), {
+        isShowNotificationError: false,
+      }),
     {
       refetchInterval: 1000 * 30 * 1, // 1 second
       select: (res: any) => res?.data?.data,

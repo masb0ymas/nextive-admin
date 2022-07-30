@@ -3,14 +3,17 @@ import useUrlQuery, {
   UseUrlQueryOptions,
 } from '@nexys/hooks/useUrlQuery/useUrlQuery'
 import { AxiosError } from 'axios'
-import { UseRoleData } from 'data/useRole'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ApiCall from 'services/ApiCall'
+import { RoleEntity } from './useRole'
 
-type UseRoleResult = UseRoleData
+type UseRoleResult = RoleEntity
 
 type TQueryFnData = UseRoleResult
 type TError = AxiosError
+
+// endpoint API
+const endpointURL = `${BASE_API_URL}/role`
 
 function useRoleById(
   id: any,
@@ -20,7 +23,7 @@ function useRoleById(
   const urlQuery = useUrlQuery(urlOptions)
   const query = useQuery<TQueryFnData, TError>(
     urlQuery.transformKey(['/role-by-id', id]),
-    () => ApiCall.api.get(urlQuery.transformUrl(`${BASE_API_URL}/role/${id}`)),
+    () => ApiCall.api.get(urlQuery.transformUrl(`${endpointURL}/${id}`)),
     {
       // refetchOnMount: false,
       // refetchOnReconnect: false,

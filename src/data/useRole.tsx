@@ -6,24 +6,6 @@ import { AxiosError } from 'axios'
 import { useQuery, UseQueryOptions } from 'react-query'
 import ApiCall from 'services/ApiCall'
 
-export interface UseRoleData {
-  id: string
-  name: string
-  createdAt: string
-  updatedAt: string
-  deletedAt: string
-}
-
-export type RoleEntity = Pick<UseRoleData, 'name'>
-
-type UseRoleResult = {
-  data: UseRoleData[]
-  total: number
-}
-
-type TQueryFnData = UseRoleResult
-type TError = AxiosError
-
 export const defaultRoleData = {
   id: null,
   name: null,
@@ -31,6 +13,30 @@ export const defaultRoleData = {
   updatedAt: null,
   deletedAt: null,
 }
+
+export interface RoleEntity {
+  id: string
+  name: string
+  createdAt: string
+  updatedAt: string
+  deletedAt: string
+}
+
+export type RoleAttributes = Omit<
+  RoleEntity,
+  'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+>
+
+type UseRoleResult = {
+  data: RoleEntity[]
+  total: number
+}
+
+type TQueryFnData = UseRoleResult
+type TError = AxiosError
+
+// endpoint API
+const endpointURL = `${BASE_API_URL}/role?`
 
 function useRole(
   urlOptions?: UseUrlQueryOptions,
@@ -40,11 +46,9 @@ function useRole(
   const query = useQuery<TQueryFnData, TError>(
     urlQuery.transformKey('/role'),
     () =>
-      ApiCall.api
-        .get(urlQuery.transformUrl(`${BASE_API_URL}/role?`))
-        .then((res) => {
-          return res.data
-        }),
+      ApiCall.api.get(urlQuery.transformUrl(endpointURL)).then((res) => {
+        return res.data
+      }),
     {
       ...options,
     },
