@@ -3,12 +3,11 @@ import cssContent from '@nexys/components/Content/Content.module.scss'
 import LoadingForm from '@nexys/components/Loading/partials/LoadingForm'
 import FInput from '@nexys/fields/FInput/FInput'
 import { Col, notification, PageHeader, Row, Space, Spin } from 'antd'
-import { RoleEntity } from 'data/useRole'
+import { RoleAttributes } from 'data/useRole'
 import useRoleById from 'data/useRoleById'
 import { Form, Formik } from 'formik'
 import { get } from 'lodash'
 import Router from 'next/router'
-import React from 'react'
 import { useMutation } from 'react-query'
 import ApiCall from 'services/ApiCall'
 import roleSchema from 'validations/accounts/role/roleSchema'
@@ -72,11 +71,7 @@ function AbstractForm(props: AbstractFormProps) {
                 <Row gutter={16}>
                   <Col md={16} xs={24}>
                     <div className={cssContent.contentForm}>
-                      <Space
-                        direction="vertical"
-                        style={{ width: '100%' }}
-                        size="large"
-                      >
+                      <Space direction="vertical" style={{ width: '100%' }}>
                         <FInput
                           title="Name"
                           name="name"
@@ -107,7 +102,9 @@ function AbstractForm(props: AbstractFormProps) {
 }
 
 function FormAdd() {
-  const createData = useMutation((data: RoleEntity) => ApiCall.Role.create(data))
+  const createData = useMutation((data: RoleAttributes) =>
+    ApiCall.Role.create(data),
+  )
 
   return (
     <AbstractForm
@@ -129,7 +126,7 @@ function FormEdit(props: any) {
   const { isLoading, remove, data } = queryRoleById
 
   const updateData = useMutation(
-    (data: RoleEntity) => ApiCall.Role.update(id, data),
+    (data: RoleAttributes) => ApiCall.Role.update(id, data),
     {
       onSettled() {
         remove()

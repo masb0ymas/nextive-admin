@@ -15,7 +15,7 @@ import DetailRole from 'views/Admin/Settings/Account/Role/Detail'
 function Role(props: PageProps) {
   const defaultPage = _.get(props, 'defaultPage', 1)
   const defaultPageSize = 10
-  const baseUrlPage = `/admin/settings/account/role`
+  const baseURL = `/admin/settings/account/role`
 
   const [title, setTitle] = useState(undefined)
   const debouncedTitle = useDebounce(title, 500)
@@ -93,8 +93,10 @@ function Role(props: PageProps) {
           />
         </Col>
 
+        <Col flex={'auto'} />
+
         <MyTable
-          baseUrl={baseUrlPage}
+          baseUrl={baseURL}
           columns={columns}
           query={queryRole}
           mutation={multipleDelete}

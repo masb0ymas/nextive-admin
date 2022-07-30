@@ -1,10 +1,10 @@
 import cssContent from '@nexys/components/Content/Content.module.scss'
 import { Descriptions } from 'antd'
-import { UseRoleData } from 'data/useRole'
+import { RoleEntity } from 'data/useRole'
 import React from 'react'
 
 interface DetailRoleProps {
-  data: UseRoleData
+  data: RoleEntity
 }
 
 function DetailRole(props: DetailRoleProps) {
