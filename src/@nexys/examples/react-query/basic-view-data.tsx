@@ -1,12 +1,12 @@
-import React, { useMemo } from 'react'
-import { List, Row, Col, Input, Pagination } from 'antd'
-import useProfession from 'data/useProfession'
+import { Col, Input, List, Pagination, Row } from 'antd'
+import useRole from 'data/useRole'
+import { useMemo } from 'react'
 
 function BasicViewData() {
   /*
    url?page=1&pageSize=10
    */
-  const qProfession = useProfession(
+  const qRole = useRole(
     {
       query: {
         initialValue: {
@@ -20,11 +20,11 @@ function BasicViewData() {
     },
   )
 
-  const { page, pageSize } = qProfession.helpers.query.get()
+  const { page, pageSize } = qRole.helpers.query.get()
 
   const [curPage, curPageSize] = useMemo(() => {
     return [page, pageSize]
-  }, [qProfession.dataUpdatedAt])
+  }, [qRole.dataUpdatedAt])
 
   return (
     <List
@@ -33,10 +33,10 @@ function BasicViewData() {
           <Col xs={24}>
             <Input.Search
               style={{ maxWidth: 500 }}
-              placeholder={'Cari Profesi'}
+              placeholder={'Cari Role'}
               onChange={(event) => {
                 const { value } = event.target
-                qProfession.helpers.setQuerySyncDebounce((helper) => {
+                qRole.helpers.setQuerySyncDebounce((helper) => {
                   helper.filtered.set('name', value)
                   helper.query.set('page', 1)
                 })
@@ -46,15 +46,15 @@ function BasicViewData() {
           <Col xs={24}>
             <Pagination
               onChange={(page, pageSize) => {
-                qProfession.helpers.setQuerySync((helper) => {
+                qRole.helpers.setQuerySync((helper) => {
                   helper.query.set('page', page)
                   helper.query.set('pageSize', pageSize)
                 })
               }}
-              disabled={qProfession.isLoading || qProfession.isPreviousData}
+              disabled={qRole.isLoading || qRole.isPreviousData}
               pageSize={pageSize || 10}
               current={page || 1}
-              total={qProfession.total}
+              total={qRole.total}
               showSizeChanger
               showTotal={(total, range) => {
                 return `${range.join('-')} of ${total}`
@@ -63,14 +63,14 @@ function BasicViewData() {
           </Col>
         </Row>
       }
-      dataSource={qProfession.data}
-      loading={qProfession.isLoading || qProfession.isPreviousData}
-      renderItem={(profesi, index) => {
+      dataSource={qRole.data}
+      loading={qRole.isLoading || qRole.isPreviousData}
+      renderItem={(role, index) => {
         return (
           <List.Item>
             <List.Item.Meta
               avatar={index + 1 + (curPage - 1) * curPageSize}
-              title={profesi.name}
+              title={role.name}
             />
           </List.Item>
         )
