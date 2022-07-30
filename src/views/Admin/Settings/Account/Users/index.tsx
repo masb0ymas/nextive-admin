@@ -6,35 +6,17 @@ import Lists from '@nexys/helpers/Lists'
 import formatPhone from '@nexys/helpers/Phone'
 import useDebounce from '@nexys/hooks/useDebounce/useDebounce'
 import useToggle from '@nexys/hooks/useToggle'
+import { PageProps } from '@nexys/interface/Page'
 import { Button, Checkbox, Col, Input, Modal, Row, Select, Space } from 'antd'
 import useRole from 'data/useRole'
-import useUser from 'data/useUser'
+import useUser, { defaultUserData } from 'data/useUser'
 import { get } from 'lodash'
 import { useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import ApiCall from 'services/ApiCall'
 import DetailUser from 'views/Admin/Settings/Account/Users/Detail'
 
-interface UsersProps {
-  defaultPage: number
-}
-
-const defaultData = {
-  id: null,
-  fullName: null,
-  email: null,
-  phone: null,
-  picturePath: null,
-  address: null,
-  RoleId: null,
-  Role: null,
-  referralCode: null,
-  createdAt: null,
-  updatedAt: null,
-  deletedAt: null,
-}
-
-function Users(props: UsersProps) {
+function Users(props: PageProps) {
   const defaultPage = get(props, 'defaultPage', 1)
   const defaultPageSize = 10
   const baseUrlPage = `/admin/settings/account/users`
@@ -50,7 +32,7 @@ function Users(props: UsersProps) {
     initialToggle,
     initialState: {
       visible: false,
-      data: defaultData,
+      data: defaultUserData,
     },
   })
 
@@ -118,6 +100,14 @@ function Users(props: UsersProps) {
       },
     },
     {
+      Header: 'Blocked',
+      accessor: 'isBlocked',
+      Cell: (row) => {
+        const { value } = row
+        return <Checkbox checked={value} />
+      },
+    },
+    {
       Header: 'Role',
       accessor: 'Role.name',
       width: 180,
@@ -125,6 +115,7 @@ function Users(props: UsersProps) {
     {
       Header: 'Detail',
       accessor: 'detail',
+      fixed: 'right',
       width: 70,
       Cell: (row) => {
         const { original } = row
@@ -184,11 +175,14 @@ function Users(props: UsersProps) {
           />
         </Col>
 
+        <Col flex={'auto'} />
+
         <MyTable
           baseUrl={baseUrlPage}
           columns={columns}
           query={queryUser}
           mutation={multipleDelete}
+          isFixedColumns
         />
       </Row>
 

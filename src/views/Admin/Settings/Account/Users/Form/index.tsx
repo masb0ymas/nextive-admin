@@ -9,24 +9,14 @@ import FSelect from '@nexys/fields/FSelect/FSelect'
 import Lists from '@nexys/helpers/Lists'
 import { Col, Divider, notification, PageHeader, Row, Space, Spin } from 'antd'
 import useRole from 'data/useRole'
+import { UserAttributes } from 'data/useUser'
 import useUserById from 'data/useUserById'
 import { Form, Formik } from 'formik'
 import { get } from 'lodash'
 import Router from 'next/router'
-import React from 'react'
 import { useMutation } from 'react-query'
 import ApiCall from 'services/ApiCall'
 import userSchema from 'validations/accounts/users/userSchema'
-
-export interface IUserPost {
-  fullName: string
-  email: string
-  phone: string
-  newPassword: string
-  confirmNewPassword: string
-  RoleId: string
-  isActive: boolean
-}
 
 interface AbstractFormProps {
   initialValues: any
@@ -197,7 +187,9 @@ function AbstractForm(props: AbstractFormProps) {
 }
 
 function FormAdd() {
-  const createData = useMutation((data: IUserPost) => ApiCall.User.create(data))
+  const createData = useMutation((data: UserAttributes) =>
+    ApiCall.User.create(data),
+  )
 
   return (
     <AbstractForm
@@ -225,7 +217,7 @@ function FormEdit(props: any) {
   const { isLoading, remove, data } = queryUserById
 
   const updateData = useMutation(
-    (data: IUserPost) => ApiCall.User.update(id, data),
+    (data: UserAttributes) => ApiCall.User.update(id, data),
     {
       onSettled() {
         remove()

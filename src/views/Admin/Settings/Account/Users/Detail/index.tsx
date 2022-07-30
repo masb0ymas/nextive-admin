@@ -1,11 +1,10 @@
 import cssContent from '@nexys/components/Content/Content.module.scss'
 import formatPhone from '@nexys/helpers/Phone'
 import { Checkbox, Descriptions } from 'antd'
-import { UseUserData } from 'data/useUser'
-import React from 'react'
+import { UserEntity } from 'data/useUser'
 
 interface DetailUserProps {
-  data: UseUserData
+  data: UserEntity
 }
 
 function DetailUser(props: DetailUserProps) {
