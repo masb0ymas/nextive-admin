@@ -9,6 +9,7 @@ function showNotification(error: AxiosError) {
   function show() {
     notification.error({
       message: 'Error!',
+      // @ts-expect-error
       description: error?.response?.data?.message || error.message,
     })
   }
